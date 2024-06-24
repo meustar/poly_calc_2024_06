@@ -15,16 +15,14 @@ public class Calc {
         boolean needToPlus = exp.contains("+");
 //        boolean needToMinus = exp.contains("-");
 
-        String[] bits = exp.split(" \\+ ");
+        List<String> numList = new ArrayList<>();
+        numList = List.of(exp.split(" \\+ "));
 
 //        if(needToPlus) {
 //            bits = exp.split(" \\+ ");
 //        } else if (needToMinus) {
 //            bits = exp.split(" \\- ");
 //        }
-
-//        List<String> numList = new ArrayList<String>();
-
 
         int a = Integer.parseInt(bits[0]);
         int b = Integer.parseInt(bits[1]);
@@ -33,6 +31,11 @@ public class Calc {
         if (bits.length > 2) {
             c = Integer.parseInt(bits[2]);
         }
+
+        for (int i = 0; i < numList.size(); i++) {
+
+        }
+
 
 //        if (needToPlus) {
 //            return a + b + c;
