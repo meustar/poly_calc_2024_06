@@ -11,8 +11,8 @@ public class Calc {
             return Integer.parseInt(exp);
         }
 
-        boolean needToMulti = exp.contains("*");
-        boolean needToPlus = exp.contains("+");
+        boolean needToMulti = exp.contains(" * ");
+        boolean needToPlus = exp.contains(" + ") || exp.contains(" - ");
 
         boolean needToCompound = needToMulti && needToPlus;
 
@@ -42,13 +42,13 @@ public class Calc {
         int sum = 0;
         int mul = 1;
 
-         if (exp.contains("+")) {
+         if (needToPlus) {
             bits = exp.split(" \\+ ");
             for (int i = 0; i < bits.length; i++) {
                 sum += Integer.parseInt(bits[i]);
             }
             return sum;
-        } else if (exp.contains("*")) {
+        } else if (needToMulti) {
             bits = exp.split(" \\* ");
             for (int i = 0; i < bits.length; i++) {
                 mul *= Integer.parseInt(bits[i]);
