@@ -36,6 +36,8 @@ public class Calc {
         }
 
         exp = exp.replaceAll("- ", "+ -");
+        exp = exp.replaceAll("\\(", "");
+        exp = exp.replaceAll("\\)", "");
 
         int sum = 0;
         int mul = 1;
