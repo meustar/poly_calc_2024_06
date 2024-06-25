@@ -54,17 +54,29 @@ public class Calc {
     }
 
     private static String stripOuterBrackets(String exp) {
+//         // 내가 만든 방법.
+//        for (int i = 0; i < exp.length(); i++) {
+//            if (exp.charAt(i) == '(') {
+//                exp = exp.replace("(", "");
+//            } else if (exp.charAt(i) == ')') {
+//                exp = exp.replace(")", "");
+//            }
+//        }
 
-        for (int i = 0; i < exp.length(); i++) {
-            if (exp.charAt(i) == '(') {
-                exp = exp.replace("(", "");
-            } else if (exp.charAt(i) == ')') {
-                exp = exp.replace(")", "");
-            }
+        // 선생님 방법.
+        int outerBracketsCount = 0;
+
+        while (exp.charAt(outerBracketsCount) == '(' && exp.charAt(exp.length() - 1 - outerBracketsCount) == ')') {
+            outerBracketsCount++;
         }
+        if (outerBracketsCount == 0) return exp;
+
+
 //        if (exp.charAt(0) == '(' && exp.charAt(exp.length() - 1) == ')') {
 //            exp = exp.substring(1, exp.length() - 1);
 //        }
-        return exp;
+//        return exp;
+        return exp.substring(outerBracketsCount, exp.length() - outerBracketsCount);
     }
+
 }
