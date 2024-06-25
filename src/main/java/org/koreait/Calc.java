@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 
 public class Calc {
     public static int run(String exp) {
+        // 전처리 과정 - 괄호 제거
+        exp = stripOuterBrackets(exp);  // 괄호제거 메서드
 
         if (!exp.contains(" ")) {
             // 공백이 없는경우. => 단일항이 들어오면 바로 리턴
@@ -17,17 +19,9 @@ public class Calc {
         boolean needToCompound = needToMulti && needToPlus;
 
         String[] bits;
-//        int num = 0;
 
         if (needToCompound) {
             bits = exp.split(" \\+ ");
-//            for (int i = 0; i < bits.length; i++) {
-//                num += Integer.parseInt(bits[i]);
-//                if (bits[i].contains("*")) {
-//                    run(bits[i]);
-//                }
-//            }
-//            return Integer.parseInt(bits[0]) + Integer.parseInt(bits[1]) + run(bits[2]);
             String newExp = Arrays.stream(bits)
                     .mapToInt(Calc::run)
                     .mapToObj(e -> e + "")
@@ -36,8 +30,8 @@ public class Calc {
         }
 
         exp = exp.replaceAll("- ", "+ -");
-        exp = exp.replaceAll("\\(", "");
-        exp = exp.replaceAll("\\)", "");
+//        exp = exp.replaceAll("\\(", "");
+//        exp = exp.replaceAll("\\)", "");
 
         int sum = 0;
         int mul = 1;
@@ -57,5 +51,12 @@ public class Calc {
         }
         throw new RuntimeException("해석 불가 : 올바른 계산식이 아닙니다.");
 
+    }
+
+    private static String stripOuterBrackets(String exp) {
+        if (exp.charAt(0) == '(' && exp.charAt(exp.length() - 1) == ')') {
+            exp = exp.substring(1, exp.length() - 1);
+        }
+        return exp;
     }
 }
