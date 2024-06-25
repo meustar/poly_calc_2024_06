@@ -146,14 +146,14 @@
     @Test
     @DisplayName("((10 + 20)) == 30")
     void t21() {
-        assertThat(Calc.run("(10 + 20)")).isEqualTo(30);
+        assertThat(Calc.run("((10 + 20))")).isEqualTo(30);
     }
     ```
 22. ```java
     @Test
     @DisplayName("(((10 + 20))) == 30")
     void t22() {
-        assertThat(Calc.run("(10 + 20)")).isEqualTo(30);
+        assertThat(Calc.run("(((10 + 20)))")).isEqualTo(30);
     }
     ```
 23. ```java
