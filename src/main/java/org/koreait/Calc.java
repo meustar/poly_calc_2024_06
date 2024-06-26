@@ -38,13 +38,13 @@ public class Calc {
             }
             String firstExp = exp.substring(0, splitPointIndex + 1);
             String secondExp = exp.substring(splitPointIndex + 4);
-
+            // (10 + 20) * 3 내가 만든 방법.
+            if (needToMulti) {
+                return Calc.run(firstExp) * Calc.run(secondExp);
+            }
             return Calc.run(firstExp) + Calc.run(secondExp);
-        }
 
-//        String[] bits;
-
-        else if (needToCompound) {
+        } else if (needToCompound) {
             String[] bits; bits = exp.split(" \\+ ");
             String newExp = Arrays.stream(bits)
                     .mapToInt(Calc::run)
