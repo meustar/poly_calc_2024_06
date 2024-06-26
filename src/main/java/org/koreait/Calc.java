@@ -15,13 +15,36 @@ public class Calc {
 
         boolean needToMulti = exp.contains(" * ");
         boolean needToPlus = exp.contains(" + ") || exp.contains(" - ");
+        // (20 + 20) + 20 == 60 의 ") +"를 기준으로 잘라야 할떄.
+        boolean needToSplit = exp.contains("(") || exp.contains(")");
 
         boolean needToCompound = needToMulti && needToPlus;
 
-        String[] bits;
+        if (needToSplit) {
+            int bracketsCount = 0;
+            int splitPointIndex = -1;
 
-        if (needToCompound) {
-            bits = exp.split(" \\+ ");
+            for(int i = 0; i < exp.length(); i++) {
+                if(exp.charAt(i) == '(') {
+                    bracketsCount++;
+                } else if (exp.charAt(i)== ')') {
+                    bracketsCount--;
+                }
+                if(bracketsCount == 0) {
+                    splitPointIndex = i;
+                    break;
+                }
+            }
+            String firstExp = exp.substring(0, splitPointIndex + 1);
+            String secondExp = exp.substring(splitPointIndex + 4);
+
+            return Calc.run(firstExp) + Calc.run(secondExp);
+        }
+
+//        String[] bits;
+
+        else if (needToCompound) {
+            String[] bits; bits = exp.split(" \\+ ");
             String newExp = Arrays.stream(bits)
                     .mapToInt(Calc::run)
                     .mapToObj(e -> e + "")
@@ -37,13 +60,13 @@ public class Calc {
         int mul = 1;
 
          if (needToPlus) {
-            bits = exp.split(" \\+ ");
+             String[] bits = exp.split(" \\+ ");
             for (int i = 0; i < bits.length; i++) {
                 sum += Integer.parseInt(bits[i]);
             }
             return sum;
         } else if (needToMulti) {
-            bits = exp.split(" \\* ");
+             String[] bits = exp.split(" \\* ");
             for (int i = 0; i < bits.length; i++) {
                 mul *= Integer.parseInt(bits[i]);
             }
@@ -76,6 +99,7 @@ public class Calc {
 //            exp = exp.substring(1, exp.length() - 1);
 //        }
 //        return exp;
+
         return exp.substring(outerBracketsCount, exp.length() - outerBracketsCount);
     }
 
