@@ -38,11 +38,17 @@ public class Calc {
             }
             String firstExp = exp.substring(0, splitPointIndex + 1);
             String secondExp = exp.substring(splitPointIndex + 4);
-            // (10 + 20) * 3 내가 만든 방법.
-            if (needToMulti) {
-                return Calc.run(firstExp) * Calc.run(secondExp);
-            }
-            return Calc.run(firstExp) + Calc.run(secondExp);
+//            // (10 + 20) * 3 내가 만든 방법.
+//            if (needToMulti) {
+//                return Calc.run(firstExp) * Calc.run(secondExp);
+//            }
+//            return Calc.run(firstExp) + Calc.run(secondExp);
+
+            // 선생님 방법.
+            char operator = exp.charAt(splitPointIndex + 2);
+            exp = Calc.run(firstExp) + " " + operator + " " + Calc.run(secondExp);
+
+            return Calc.run(exp);
 
         } else if (needToCompound) {
             String[] bits; bits = exp.split(" \\+ ");
