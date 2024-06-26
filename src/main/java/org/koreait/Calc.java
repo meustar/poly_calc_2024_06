@@ -15,6 +15,12 @@ public class Calc {
         // 전처리 과정 - 괄호 제거
         exp = stripOuterBrackets(exp);  // 괄호제거 메서드
 
+        // -(10 + 5) == -15 시작.
+        // 만약에 -( 패턴이라면, 내가 갖고있는 코드는 해석할 수 없으므로. 해석할 수 있는 형태로 수정
+        if (isCaseMinusBracket(exp)) {
+            exp = exp.substring(1) + " * -1";
+        }
+
         if (debug) {
             System.out.printf("exp(%d) : %s\n", runCallCount, exp);
         }
@@ -34,8 +40,6 @@ public class Calc {
 
         if (needToSplit) {
             int splitPointIndex = findSplitPointIndex(exp);
-
-
 
             String firstExp = exp.substring(0, splitPointIndex);
             String secondExp = exp.substring(splitPointIndex + 1);
@@ -85,6 +89,30 @@ public class Calc {
 
     }
 
+    private static boolean isCaseMinusBracket(String exp) {
+        // -( 로 시작하는지 검별.
+        if(exp.startsWith("-(") == false) return false;
+
+        // 괄호로 감싸져 있는지 감별.
+        int bracketsCount = 0;
+
+        for (int i = 1; i < exp.length(); i++) {
+            char c = exp.charAt(i);
+
+            if (c == '(') {
+                bracketsCount++;
+            } else if (c == ')') {
+                bracketsCount--;
+            }
+            if (bracketsCount == 0) {
+                if(exp.length() -1 == i) return  true;
+            }
+
+        }
+
+        return true;
+    }
+
     private static int findSplitPointIndex(String exp) {
         int index = findSplitPointIndexBy(exp, '+');
 
@@ -94,17 +122,17 @@ public class Calc {
     }
 
     private static int findSplitPointIndexBy(String exp, char findChar) {
-        int brackesCount = 0;
+        int bracketsCount = 0;
 
         for (int i = 0; i < exp.length(); i++) {
             char c = exp.charAt(i);
 
             if (c == '(') {
-                brackesCount++;
+                bracketsCount++;
             } else if (c == ')') {
-                brackesCount--;
+                bracketsCount--;
             } else if (c == findChar) {
-                if (brackesCount == 0) return i;
+                if (bracketsCount == 0) return i;
             }
         }
         return -1;
