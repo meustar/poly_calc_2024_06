@@ -4,10 +4,21 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class Calc {
+
+    public static boolean debug = true;
+    public static int runCallCount = 0;
+
     public static int run(String exp) {
+        runCallCount++;
+
         exp = exp.trim(); // 양 옆의 쓸데없는 공백 제거. " 20 " => "20" 단, 가운데의 공백은 건드리지 않는다.
         // 전처리 과정 - 괄호 제거
         exp = stripOuterBrackets(exp);  // 괄호제거 메서드
+
+        if (debug) {
+            System.out.printf("exp(%d) : %s\n", runCallCount, exp);
+        }
+
 
         if (!exp.contains(" ")) {
             // 공백이 없는경우. => 단일항이 들어오면 바로 리턴

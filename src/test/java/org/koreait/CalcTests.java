@@ -164,9 +164,9 @@ public class CalcTests {
     }
 
     @Test
-    @DisplayName("10 * (10 + 5) == 25")
+    @DisplayName("10 * (10 + 5) == 150")
     void t27() {
-        assertThat(Calc.run("10 * (10 + 5)")).isEqualTo(25);
+        assertThat(Calc.run("10 * (10 + 5)")).isEqualTo(150);
     }
 
     @Test
