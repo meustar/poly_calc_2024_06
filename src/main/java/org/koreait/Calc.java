@@ -9,6 +9,10 @@ public class Calc {
     public static int runCallCount = 0;
 
     public static int run(String exp) {
+        return  _run(exp, 0);
+    }
+
+    public static int _run(String exp, int depth) {
         runCallCount++;
 
         exp = exp.trim(); // 양 옆의 쓸데없는 공백 제거. " 20 " => "20" 단, 가운데의 공백은 건드리지 않는다.
@@ -17,11 +21,17 @@ public class Calc {
 
         // -(10 + 5) == -15 시작.
         // 만약에 -( 패턴이라면, 내가 갖고있는 코드는 해석할 수 없으므로. 해석할 수 있는 형태로 수정
-        if (isCaseMinusBracket(exp)) {
-            exp = exp.substring(1) + " * -1";
+//        if (isCaseMinusBracket(exp)) {
+//            exp = exp.substring(1) + " * -1";
+//        }
+        int[] pos = null;
+        while ((pos = findCaseMinusBracket(exp)) != null) {
+            exp = changeMinusBracket(exp, pos[0], pos[1]);
         }
+        exp = stripOuterBrackets(exp);
 
         if (debug) {
+            System.out.print(" ".repeat(depth * 4));
             System.out.printf("exp(%d) : %s\n", runCallCount, exp);
         }
 
@@ -39,6 +49,8 @@ public class Calc {
         boolean needToCompound = needToMulti && needToPlus;
 
         if (needToSplit) {
+            // 5 - (1 + 5)에서 -를 + -로 바꾼다. => 5 + -(1 + 5)
+            exp = exp.replaceAll("- ", "+ -");
             int splitPointIndex = findSplitPointIndex(exp);
 
             String firstExp = exp.substring(0, splitPointIndex);
@@ -52,17 +64,17 @@ public class Calc {
 
             // 선생님 방법.
             char operator = exp.charAt(splitPointIndex);
-            exp = Calc.run(firstExp) + " " + operator + " " + Calc.run(secondExp);
+            exp = Calc._run(firstExp,depth + 1) + " " + operator + " " + Calc._run(secondExp, depth + 1);
 
-            return Calc.run(exp);
+            return Calc._run(exp, depth + 1);
 
         } else if (needToCompound) {
-            String[] bits; bits = exp.split(" \\+ ");
+            String[] bits = exp.split(" \\+ ");
             String newExp = Arrays.stream(bits)
-                    .mapToInt(Calc::run)
+                    .mapToInt(e -> Calc._run(e, depth + 1))
                     .mapToObj(e -> e + "")
                     .collect(Collectors.joining(" + "));
-            return run(newExp);
+            return _run(newExp, depth + 1);
         }
 
         exp = exp.replaceAll("- ", "+ -");
@@ -89,29 +101,64 @@ public class Calc {
 
     }
 
-    private static boolean isCaseMinusBracket(String exp) {
-        // -( 로 시작하는지 검별.
-        if(exp.startsWith("-(") == false) return false;
+    private static String changeMinusBracket(String exp, int startPos, int endPos) {
+        String head = exp.substring(0, startPos);
+        String body = "(" + exp.substring(startPos + 1, endPos + 1) + " * -1)";
+        String tail = exp.substring(endPos + 1);
 
-        // 괄호로 감싸져 있는지 감별.
-        int bracketsCount = 0;
+        exp = head + body + tail;
 
-        for (int i = 1; i < exp.length(); i++) {
-            char c = exp.charAt(i);
-
-            if (c == '(') {
-                bracketsCount++;
-            } else if (c == ')') {
-                bracketsCount--;
-            }
-            if (bracketsCount == 0) {
-                if(exp.length() -1 == i) return  true;
-            }
-
-        }
-
-        return true;
+        return exp;
     }
+
+    private static int[] findCaseMinusBracket(String exp) {
+        for (int i = 0; i < exp.length() - 1; i++) {
+            if (exp.charAt(i) == '-' && exp.charAt(i + 1) == '(') {
+                // 발견
+
+                int bracketsCount = 1;
+
+                for (int j = i + 2; j < exp.length(); j++) {
+                    char c = exp.charAt(j);
+
+                    if (c == '(') {
+                        bracketsCount++;
+                    } else if (c == ')') {
+                        bracketsCount--;
+                    }
+
+                    if (bracketsCount == 0) {
+                        return new int[]{i, j};
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+//    private static boolean isCaseMinusBracket(String exp) {
+//        // -( 로 시작하는지 검별.
+//        if(exp.startsWith("-(") == false) return false;
+//
+//        // 괄호로 감싸져 있는지 감별.
+//        int bracketsCount = 0;
+//
+//        for (int i = 1; i < exp.length(); i++) {
+//            char c = exp.charAt(i);
+//
+//            if (c == '(') {
+//                bracketsCount++;
+//            } else if (c == ')') {
+//                bracketsCount--;
+//            }
+//            if (bracketsCount == 0) {
+//                if(exp.length() -1 == i) return  true;
+//            }
+//
+//        }
+//
+//        return true;
+//    }
 
     private static int findSplitPointIndex(String exp) {
         int index = findSplitPointIndexBy(exp, '+');
@@ -149,12 +196,12 @@ public class Calc {
 //        }
 
         // 선생님 방법.
-        int outerBracketsCount = 0;
-
-        while (exp.charAt(outerBracketsCount) == '(' && exp.charAt(exp.length() - 1 - outerBracketsCount) == ')') {
-            outerBracketsCount++;
-        }
-        if (outerBracketsCount == 0) return exp;
+//        int outerBracketsCount = 0;
+//
+//        while (exp.charAt(outerBracketsCount) == '(' && exp.charAt(exp.length() - 1 - outerBracketsCount) == ')') {
+//            outerBracketsCount++;
+//        }
+//        if (outerBracketsCount == 0) return exp;
 
 
 //        if (exp.charAt(0) == '(' && exp.charAt(exp.length() - 1) == ')') {
@@ -162,7 +209,28 @@ public class Calc {
 //        }
 //        return exp;
 
-        return exp.substring(outerBracketsCount, exp.length() - outerBracketsCount);
-    }
+//        return exp.substring(outerBracketsCount, exp.length() - outerBracketsCount);
+//    }
+        if (exp.charAt(0) == '(' && exp.charAt(exp.length() - 1) == ')') {
+            int bracketsCount = 0;
 
+            for (int i = 0; i < exp.length(); i++) {
+                if (exp.charAt(i) == '(') {
+                    bracketsCount++;
+                } else if (exp.charAt(i) == ')') {
+                    bracketsCount--;
+                }
+
+                if (bracketsCount == 0) {
+                    if (exp.length() == i + 1) {
+                        return stripOuterBrackets(exp.substring(1, exp.length() - 1));
+                    }
+
+                    return exp;
+                }
+            }
+        }
+
+        return exp;
+    }
 }
